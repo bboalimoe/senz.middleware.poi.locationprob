@@ -115,14 +115,14 @@ SIMPLE_TIME_PROBABILITY = {
                          'education': {'weekday' : 0.03, 'rest_day' : 0.005},
                          'finance': 0.001,
                          'infrastructure' : 0.001,
-                         'estate' : 0.03,},
+                         'estate' : 0.02,},
     },
     'afternoon' : {
         'hour_range' : [14, 15, 16, 17],
         'probability' : {'dining': 0.01,
-                        'shopping': {'weekday' : 0.001, 'rest_day' : 0.03},
-                        'life_service': {'weekday' : 0.001, 'rest_day' : 0.01},
-                        'entertainment': {'weekday' : 0.001, 'rest_day' : 0.03},
+                        'shopping': {'weekday' : 0.001, 'rest_day' : 0.04},
+                        'life_service': {'weekday' : 0.001, 'rest_day' : 0.02},
+                        'entertainment': {'weekday' : 0.001, 'rest_day' : 0.04},
                         'auto_related': 0.001,
                         'healthcare': {'weekday' : 0.001, 'rest_day' : 0.01},
                          'hotel': {'weekday' : 0.001, 'rest_day' : 0.005},
@@ -135,15 +135,15 @@ SIMPLE_TIME_PROBABILITY = {
     },
     'super_time' : {
         'hour_range' : [18, 19, ],
-        'probability' : {'dining': 0.001,
-                        'shopping': {'weekday' : 0.001, 'rest_day' : 0.03},
+        'probability' : {'dining': 0.05,
+                        'shopping': {'weekday' : 0.001, 'rest_day' : 0.01},
                         'life_service': {'weekday' : 0.001, 'rest_day' : 0.01},
-                        'entertainment': {'weekday' : 0.001, 'rest_day' : 0.03},
+                        'entertainment': {'weekday' : 0.001, 'rest_day' : 0.01},
                         'auto_related': 0.001,
                         'healthcare': {'weekday' : 0.001, 'rest_day' : 0.01},
                          'hotel': {'weekday' : 0.001, 'rest_day' : 0.005},
-                         'scenic_spot': {'weekday' : 0.001, 'rest_day' : 0.02},
-                         'exhibition' : {'weekday' : 0.001, 'rest_day' : 0.01},
+                         'scenic_spot': {'weekday' : 0.001, 'rest_day' : 0.005},
+                         'exhibition' : 0.001,
                          'education': {'weekday' : 0.03, 'rest_day' : 0.005},
                          'finance': 0.001,
                          'infrastructure' : 0.001,
@@ -151,7 +151,7 @@ SIMPLE_TIME_PROBABILITY = {
     },
     'night' : {
         'hour_range' : [20, 21, 22, 23],
-        'probability' : {'dining': 0.02,
+        'probability' : {'dining': 0.01,
                         'shopping': {'weekday' : 0.01, 'rest_day' : 0.03},
                         'life_service': {'weekday' : 0.001, 'rest_day' : 0.01},
                         'entertainment': {'weekday' : 0.001, 'rest_day' : 0.03},
@@ -173,11 +173,14 @@ class SimpleLocationProbability(LocationProbability):
     def __init__(self):
         self.poi_type_mapping = get_poi_mapping()
 
-    def _get_mapping_type(self, poi):
+    def _get_mapping_type(self, poi_l2_type):
             '''get top level mapping type
             '''
+            if poi_l2_type is None:
+                return None
+
             for t_name in self.poi_type_mapping:
-                if 'type' in poi and poi['type']['mapping_type'] in self.poi_type_mapping[t_name]:
+                if poi_l2_type in self.poi_type_mapping[t_name]:
                     return t_name
 
     def _prob_from_time(self, poi):
@@ -192,20 +195,21 @@ class SimpleLocationProbability(LocationProbability):
         time_hour = time.localtime(timestamp / 1000).tm_hour
 
         for p in poi['pois']:
-            mapping_type = self._get_mapping_type(p)
+            poi_l2_type = poi['type'].get('mapping_type', None)
+            mapping_l1_type = self._get_mapping_type(poi_l2_type)
 
             for time_range in SIMPLE_TIME_PROBABILITY:
                 if time_hour in SIMPLE_TIME_PROBABILITY[time_range]['hour_range']:
                     whole_prob = SIMPLE_TIME_PROBABILITY[time_range]['probability']
 
-            if mapping_type in whole_prob:
-                if isinstance(whole_prob[mapping_type], dict):
+            if mapping_l1_type and mapping_l1_type in whole_prob:
+                if isinstance(whole_prob[mapping_l1_type], dict):
                     if weekday in [0, 6]:
-                        probablity = whole_prob[mapping_type]['rest_day']
+                        probablity = whole_prob[mapping_l1_type]['rest_day']
                     else:
-                        probablity = whole_prob[mapping_type]['weekday']
+                        probablity = whole_prob[mapping_l1_type]['weekday']
                 else:
-                    probablity = whole_prob[mapping_type]
+                    probablity = whole_prob[mapping_l1_type]
 
                 #print poi['poi_probability']
 
@@ -213,7 +217,7 @@ class SimpleLocationProbability(LocationProbability):
 
                 #if
 
-                poi['poi_probability'][mapping_type] += probablity
+                poi['poi_probability'][mapping_type][] += probablity
 
     def _prob_from_poi_quantity(self, poi):
         statistics = {}
@@ -244,18 +248,31 @@ class SimpleLocationProbability(LocationProbability):
 
 
     def compute(self, trace, places=None):
+
+        base_prob = {}
+
+        for p in DEFAULT_POI_MAPPING:
+            base_prob[p] = {}
+            base_prob[p]['sum_probability'] = 0.0001
+            for p_l2 in DEFAULT_POI_MAPPING[p]:
+                base_prob[p][p_l2] = 0.0001
+
+        for p in ['home', 'office', 'unknown']:
+            base_prob[p]['sum_probability'] = 0.0001
+
         for t in trace:
             pois = t.get('pois', None)
 
             if not pois:
                 continue
 
-            t['poi_probability'] = {}
-            for p in DEFAULT_POI_MAPPING:
-                t['poi_probability'][p] = 0.0001
+            #t['poi_probability'] = {}
+            #for p in DEFAULT_POI_MAPPING:
+            #   t['poi_probability'][p] = 0.0001
 
-            t['poi_probability']['unknown'] = 0.0001
+            #t['poi_probability']['unknown'] = 0.0001
 
+            t['poi_probability'] = dict(base_prob)
             self._prob_from_time(t)
             #self._prob_from_poi_quantity(t)
             self._prob_from_poi_distance(t)
