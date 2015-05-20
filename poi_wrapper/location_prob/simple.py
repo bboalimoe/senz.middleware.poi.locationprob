@@ -180,7 +180,7 @@ class SimpleLocationProbability(LocationProbability):
                 return None
 
             for t_name in self.poi_type_mapping:
-                if poi_l2_type in self.poi_type_mapping[t_name]:
+                if poi_l2_type in self.poi_type_mapping[t_name] or poi_l2_type == t_name:
                     return t_name
 
     def _prob_from_time(self, poi):
@@ -217,7 +217,7 @@ class SimpleLocationProbability(LocationProbability):
 
                 #if
 
-                poi['poi_probability'][mapping_type][] += probablity
+                poi['poi_probability'][mapping_l1_type][poi_l2_type] += probablity
 
     def _prob_from_poi_quantity(self, poi):
         statistics = {}
@@ -236,15 +236,23 @@ class SimpleLocationProbability(LocationProbability):
             #geopoint locate inside poi if distance is 0
             probability = 1.0 / p['_distance'] if p['_distance'] > 0 else 1.0
 
-            mapping_type = self._get_mapping_type(p)
+            poi_l2_type = poi['type'].get('mapping_type', None)
+            mapping_l1_type = self._get_mapping_type(poi_l2_type)
 
-            print 'type %s' % mapping_type
+            print 'type %s' % mapping_l1_type
             print 'dis prob %s ' % probability
 
-            if mapping_type is not None:
-                poi['poi_probability'][mapping_type] += probability
+            if mapping_l1_type is not None:
+                poi['poi_probability'][mapping_l1_type][poi_l2_type] += probability
             else:
-                poi['poi_probability']['unknown'] += probability
+                poi['poi_probability']['unknown']['sum_probability'] += probability
+
+
+    def _home_office_prob(self, poi, places=None):
+        if places is None:
+            return
+
+
 
 
     def compute(self, trace, places=None):
@@ -276,5 +284,6 @@ class SimpleLocationProbability(LocationProbability):
             self._prob_from_time(t)
             #self._prob_from_poi_quantity(t)
             self._prob_from_poi_distance(t)
+            self._home_office_prob(t, places)
 
         return trace
