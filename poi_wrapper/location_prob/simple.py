@@ -7,6 +7,7 @@ import datetime
 from abc import *
 
 from poi_wrapper.exceptions import *
+from poi_wrapper.common.utils import geoutils
 
 DEFAULT_POI_MAPPING= {
     'dining' : [
@@ -195,7 +196,7 @@ class SimpleLocationProbability(LocationProbability):
         time_hour = time.localtime(timestamp / 1000).tm_hour
 
         for p in poi['pois']:
-            poi_l2_type = poi['type'].get('mapping_type', None)
+            poi_l2_type = p['type'].get('mapping_type', None)
             mapping_l1_type = self._get_mapping_type(poi_l2_type)
 
             for time_range in SIMPLE_TIME_PROBABILITY:
@@ -236,7 +237,7 @@ class SimpleLocationProbability(LocationProbability):
             #geopoint locate inside poi if distance is 0
             probability = 1.0 / p['_distance'] if p['_distance'] > 0 else 1.0
 
-            poi_l2_type = poi['type'].get('mapping_type', None)
+            poi_l2_type = p['type'].get('mapping_type', None)
             mapping_l1_type = self._get_mapping_type(poi_l2_type)
 
             print 'type %s' % mapping_l1_type
@@ -252,7 +253,38 @@ class SimpleLocationProbability(LocationProbability):
         if places is None:
             return
 
+        #if 'place_recognition' in places['results']:
+        for place in places:
+            dist = geoutils.distance( poi['location']['longitude'], poi['location']['latitude'],
+                                       place['location']['longitude'], place['location']['latitude'])
 
+            if place['tag'] in poi['poi_probability']:
+                poi['poi_probability'][place['tag']]['sum_probability'] += 1.0 / dist if dist > 0 else 1
+
+                if dist < 30:
+                    poi['poi_probability'][place['tag']]['sum_probability'] += 1.0
+
+
+    def _normalize_prob(self, poi):
+        sum = 0.0
+        for p in poi['poi_probability']:
+            if p in ['home', 'office', 'unknown']:
+                sum += poi['poi_probability'][p]['sum_probability']
+                continue
+
+            for l2_p in poi['poi_probability'][p]:
+                if l2_p != 'sum_probability':
+                    sum += poi['poi_probability'][p][l2_p]
+
+        for p in poi['poi_probability']:
+            if p in ['home', 'office', 'unknown']:
+                poi['poi_probability'][p]['sum_probability'] /= float(sum)
+                continue
+
+            for l2_p in poi['poi_probability'][p]:
+                if l2_p != 'sum_probability':
+                    poi['poi_probability'][p][l2_p] /= float(sum)
+                    poi['poi_probability'][p]['sum_probability'] += poi['poi_probability'][p][l2_p]
 
 
     def compute(self, trace, places=None):
@@ -266,6 +298,7 @@ class SimpleLocationProbability(LocationProbability):
                 base_prob[p][p_l2] = 0.0001
 
         for p in ['home', 'office', 'unknown']:
+            base_prob[p] = {}
             base_prob[p]['sum_probability'] = 0.0001
 
         for t in trace:
@@ -273,6 +306,8 @@ class SimpleLocationProbability(LocationProbability):
 
             if not pois:
                 continue
+
+            #print t
 
             #t['poi_probability'] = {}
             #for p in DEFAULT_POI_MAPPING:
@@ -285,5 +320,6 @@ class SimpleLocationProbability(LocationProbability):
             #self._prob_from_poi_quantity(t)
             self._prob_from_poi_distance(t)
             self._home_office_prob(t, places)
+            self._normalize_prob(t)
 
         return trace

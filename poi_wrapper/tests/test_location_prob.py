@@ -11,12 +11,16 @@ class TestLocationProb(TestBase):
 
     def testLocationProb(self):
         params = {
-            'user_trace' : [{'timestamp': 1427642632501L, 'location': {'latitude': 39.984154, '__type': u'GeoPoint', 'longitude': 116.30749}}]
+            'dev_key' : 'wzf',
+            'external_user' : 'jiusi',
+            'user_trace' : [{'timestamp': 1427642632501L, 'location': {'latitude': 39.9874399, '__type': u'GeoPoint', 'longitude': 116.4383235}}]
             }
         res = self.testBase(params, 'POST', '/senz/locationprob/', self.headers)
 
-        dic = json.loads(res)
-        print json.dumps(dic, encoding='UTF-8', ensure_ascii=False)
+        print res
+
+        #dic = json.loads(res)
+        #print json.dumps(dic, encoding='UTF-8', ensure_ascii=False)
 
 if __name__ == '__main__':
     test = TestLocationProb()

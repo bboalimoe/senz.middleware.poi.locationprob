@@ -75,3 +75,12 @@ class PoiClient(object):
 
 def get_client():
     return PoiClient()
+
+if __name__ == '__main__':
+    c = SimpleHttpClient()
+    params = {
+            'dev_key' : 'wzf',
+            'external_user' : 'jiusi',
+            'user_trace' : [{'timestamp': 1427642632501L, 'location': {'latitude': 39.9874399, '__type': u'GeoPoint', 'longitude': 116.4383235}}]
+            }
+    print c._post(POI_PLACES_URL, **params)

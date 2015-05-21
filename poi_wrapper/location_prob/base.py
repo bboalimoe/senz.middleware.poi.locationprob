@@ -16,7 +16,7 @@ class LocationProbabilityCompute(object):
         return poi_python_client.get_client()
 
     def compute_probability(self, user_trace, dev_key=None, external_user=None):
-        if len(user_trace) > 1000 and dev_key and external_user:
+        if dev_key and external_user:
             places = self._client.places.post(user_trace, dev_key, external_user)
         else:
             places = None
