@@ -29,7 +29,7 @@ def django_view(http_method):
                 LOG.debug('Got request to %s.' % func.func_name)
                 results = func(request, **kwargs)
 
-                if not isinstance(results, (dict, str)):
+                if not isinstance(results, (dict, str, list)):
                     results = str(results)
 
                 return JsonResponse({'results':results})
