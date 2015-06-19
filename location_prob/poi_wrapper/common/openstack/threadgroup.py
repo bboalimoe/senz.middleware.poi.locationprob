@@ -12,13 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import logging
+
 import eventlet
 from eventlet import greenpool
 from eventlet import greenthread
 
 from poi_wrapper.common.openstack import loopingcall
 
-import logging
 
 LOG = logging.getLogger(__name__)
 

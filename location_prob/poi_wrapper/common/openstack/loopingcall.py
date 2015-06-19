@@ -21,8 +21,8 @@ import  logging
 from eventlet import event
 from eventlet import greenthread
 
-
 from poi_wrapper.common.openstack import timeutils
+
 
 LOG = logging.getLogger(__name__)
 

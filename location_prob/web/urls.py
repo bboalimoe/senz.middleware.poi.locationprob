@@ -3,6 +3,7 @@ from django.contrib import admin
 
 from poi_wrapper import urls as senz_urls
 
+
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'web.views.home', name='home'),

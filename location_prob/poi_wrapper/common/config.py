@@ -1,8 +1,7 @@
 __author__ = 'wzf'
 
+from poi_wrapper.common import settings
 
-import settings
-import os
 
 def findGroup(avosClassName):
     #find leancloud project of avosClassName

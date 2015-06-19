@@ -1,16 +1,15 @@
 # -*- encoding=utf-8 -*-
 __author__ = 'wuzhifan'
 
-
 import logging
 import json
 
 from django.views.decorators.csrf import csrf_exempt
 
 from poi_wrapper.views.base import django_view
-
 from poi_wrapper.location_prob.base import LocationProbabilityCompute
 from poi_wrapper.exceptions import *
+
 LOG = logging.getLogger(__name__)
 
 @csrf_exempt

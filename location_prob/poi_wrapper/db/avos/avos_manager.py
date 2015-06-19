@@ -7,6 +7,7 @@ import logging
 import requests
 
 from poi_wrapper.db.avos.avos import AVObject
+from poi_wrapper.common.openstack import importutils
 from poi_wrapper.common.utils.util_opt import *
 from poi_wrapper.common.openstack import importutils
 from poi_wrapper.exceptions import *

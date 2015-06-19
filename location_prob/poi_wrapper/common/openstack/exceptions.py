@@ -17,7 +17,7 @@
 Neutron base exception handling.
 """
 
-import excutils
+from poi_wrapper.common.openstack import excutils
 
 
 class NeutronException(Exception):

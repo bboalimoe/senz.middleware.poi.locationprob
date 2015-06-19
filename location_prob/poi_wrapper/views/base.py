@@ -2,13 +2,12 @@
 __author__ = 'wuzhifan'
 
 import logging
-import json
 import traceback
-import sys
 
 from django.http.response import HttpResponse, JsonResponse
 
 from poi_wrapper.exceptions import *
+
 
 LOG = logging.getLogger(__name__)
 

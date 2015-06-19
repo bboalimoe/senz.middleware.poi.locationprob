@@ -1,10 +1,9 @@
 # -*- coidng:utf-8 -*-
 __author__ = 'wuzhifan'
 
-from poi_wrapper.exceptions import *
 from poi_wrapper.clients import poi_python_client
 
-from .simple import SimpleLocationProbability
+from poi_wrapper.location_prob.simple import SimpleLocationProbability
 
 class LocationProbabilityCompute(object):
 

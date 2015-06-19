@@ -3,11 +3,11 @@ __author__ = 'wuzhifan'
 
 import time
 import datetime
-
 from abc import *
 
 from poi_wrapper.exceptions import *
 from poi_wrapper.common.utils import geoutils
+
 
 DEFAULT_POI_MAPPING= {
     'dining' : [
@@ -280,6 +280,8 @@ class SimpleLocationProbability(LocationProbability):
             if p in ['home', 'office', 'unknown']:
                 poi['poi_probability'][p]['sum_probability'] /= float(sum)
                 continue
+
+            poi['poi_probability'][p]['sum_probability'] = 0
 
             for l2_p in poi['poi_probability'][p]:
                 if l2_p != 'sum_probability':

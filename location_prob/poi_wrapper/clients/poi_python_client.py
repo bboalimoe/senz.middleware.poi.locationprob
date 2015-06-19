@@ -1,15 +1,17 @@
 __author__ = 'wzf'
 
-import sys, os
 import json
 import httplib
 import logging
 
 from poi_wrapper.exceptions import *
 
+
 LOG = logging.getLogger(__name__)
 
 POI_HOST = "120.27.30.239:9222"
+
+TEST_HOST = "127.0.0.1:8088"
 
 class SimpleHttpClient(object):
     def __init__(self):
