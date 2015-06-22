@@ -18,7 +18,7 @@ class SimpleHttpClient(object):
         pass
 
     def request(self, params, method, url, headers):
-        self.conn = httplib.HTTPConnection(POI_HOST)
+        self.conn = httplib.HTTPConnection(TEST_HOST)
         self.conn.request(method, url,
                           json.JSONEncoder().encode(params),
                           headers)

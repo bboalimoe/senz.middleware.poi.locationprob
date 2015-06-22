@@ -95,6 +95,15 @@ LOG_FOLDER = os.getcwd() + os.path.sep + 'logs'
 if not os.path.exists(LOG_FOLDER):
     os.mkdir(LOG_FOLDER)
 
+app_env = os.environ.get('APP_ENV', 'local')
+
+test_log_token = '69213e6d-f596-4736-88fe-550d81935f2e'
+
+prod_log_token = 'dc1b5acc-ee9b-421c-9e87-c00decdc3e8c'
+
+log_token = test_log_token if app_env == 'local' or app_env == 'test' else prod_log_token
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
