@@ -15,7 +15,6 @@ RUN pip install Django
 # 1.every service should add the dependency to the requirements.txt
 
 
-
 WORKDIR /app
 
 # TOOD: move this to ancestor image?

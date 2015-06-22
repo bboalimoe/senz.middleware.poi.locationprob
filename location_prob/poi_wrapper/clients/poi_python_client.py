@@ -3,6 +3,7 @@ __author__ = 'wzf'
 import json
 import httplib
 import logging
+import os
 
 from poi_wrapper.exceptions import *
 
@@ -11,14 +12,22 @@ LOG = logging.getLogger(__name__)
 
 POI_HOST = "120.27.30.239:9222"
 
-TEST_HOST = "127.0.0.1:8088"
+LOCAL_HOST = "127.0.0.1:8088"
+
+TEST_HOST = 'senz-test-senz-datasource-poi.daoapp.io'
+
+PROB_HOST = 'senz-senz-datasource-poi.daoapp.io'
 
 class SimpleHttpClient(object):
     def __init__(self):
         pass
 
     def request(self, params, method, url, headers):
-        self.conn = httplib.HTTPConnection(TEST_HOST)
+        app_env = os.environ.get('APP_ENV', 'local')
+
+        HOST = TEST_HOST if app_env == 'local' or app_env == 'test' else PROB_HOST
+
+        self.conn = httplib.HTTPConnection(HOST)
         self.conn.request(method, url,
                           json.JSONEncoder().encode(params),
                           headers)
