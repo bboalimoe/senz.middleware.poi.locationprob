@@ -21,6 +21,8 @@ HOST_250 = '192.168.60.250:8088'
 
 HOST_144 = '192.168.248.144:8099'
 
+
+
 class TestBase(object):
     def __init__(self):
         self.avos_manager = avos_manager.AvosManager()

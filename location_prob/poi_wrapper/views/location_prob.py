@@ -16,6 +16,8 @@ LOG = logging.getLogger(__name__)
 @django_view('POST')
 def location_prob(request):
 
+    a = 1/0
+
     print 'pre location prob'
 
     body_context = json.loads(request.body)

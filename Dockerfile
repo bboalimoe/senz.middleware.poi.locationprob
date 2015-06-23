@@ -35,11 +35,16 @@ RUN pip install -r requirements.txt
 
 
 ADD gunicorn_conf.py /app/
-ADD gunicorn.supervisor.conf /etc/supervisor/conf.d/
+#ADD gunicorn.supervisor.conf /etc/supervisor/conf.d/
 
 ADD nginx.conf /app/
-ADD nginx.supervisor.conf /etc/supervisor/conf.d/
+#ADD nginx.supervisor.conf /etc/supervisor/conf.d/
 
 
 VOLUME ["/app/logs"]
 EXPOSE 9010
+
+ADD docker_entrypoint.sh /app/
+
+ENTRYPOINT /bin/sh /app/docker_entrypoint.sh
+
