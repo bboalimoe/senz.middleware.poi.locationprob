@@ -44,3 +44,4 @@ ADD nginx.supervisor.conf /etc/supervisor/conf.d/
 
 VOLUME ["/app/logs"]
 EXPOSE 9010
+
