@@ -9,7 +9,7 @@ RUN apt-get -yq install nginx
 # See https://github.com/benoitc/gunicorn/issues/788
 
 RUN pip install gunicorn==19.1.1
-RUN pip install Django
+RUN pip install Django==1.7.5
 
 
 
